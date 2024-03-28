@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Admin, Prisma, PrismaClient } from "@prisma/client";
 import calculatePagination from "../../../utils/calculatePagination";
 
 const prisma = new PrismaClient();
@@ -9,7 +9,7 @@ const getAllAdminFromDb = async (params: any, options: any) => {
 
   const adminSearchableFields = ["name", "email"];
   const { sortBy, sortOrder } = options;
-  const { limit, skip } = calculatePagination(options);
+  const { page, limit, skip } = calculatePagination(options);
 
   if (params?.searchTerm) {
     andConditions.push({
@@ -44,9 +44,41 @@ const getAllAdminFromDb = async (params: any, options: any) => {
           }
         : { createdAt: "desc" },
   });
+
+  const total = await prisma.admin.count({
+    where: whereConditions,
+  });
+
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+    },
+    data: result,
+  };
+};
+
+const getSingleAdminFromDb = async (id: string) => {
+  const result = await prisma.admin.findUnique({
+    where: {
+      id,
+    },
+  });
+  return result;
+};
+const updateSingleAdminIntoDb = async (id: string, payload: Partial<Admin>) => {
+  const result = await prisma.admin.update({
+    where: {
+      id,
+    },
+    data: payload,
+  });
   return result;
 };
 
 export const adminServices = {
   getAllAdminFromDb,
+  getSingleAdminFromDb,
+  updateSingleAdminIntoDb,
 };
