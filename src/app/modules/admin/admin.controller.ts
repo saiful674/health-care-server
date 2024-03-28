@@ -11,7 +11,9 @@ const getAllAdmin = async (req: Request, res: Response) => {
       "contactNumber",
     ]);
 
-    const result = await adminServices.getAllAdminFromDb(filter);
+    const options = pick(req.query, ["limit", "page", "sortBy", "sortOrder"]);
+
+    const result = await adminServices.getAllAdminFromDb(filter, options);
     res.status(200).json({
       success: true,
       message: "Admins are retrived successfully",
