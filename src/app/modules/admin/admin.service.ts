@@ -84,9 +84,34 @@ const deleteAdminFromDb = async (id: string) => {
         id,
       },
     });
-    const deletedUserData = await transactionClient.user.delete({
+    await transactionClient.user.delete({
       where: {
         email: deletedAdminData.email,
+      },
+    });
+
+    return deletedAdminData;
+  });
+
+  return result;
+};
+
+const softDeleteAdminFromDb = async (id: string) => {
+  const result = await prisma.$transaction(async (transactionClient) => {
+    const deletedAdminData = await transactionClient.admin.update({
+      where: {
+        id,
+      },
+      data: {
+        isDeleted: true,
+      },
+    });
+    await transactionClient.user.update({
+      where: {
+        email: deletedAdminData.email,
+      },
+      data: {
+        // status: UserStatus.deleted,
       },
     });
 
@@ -101,4 +126,5 @@ export const adminServices = {
   getSingleAdminFromDb,
   updateSingleAdminIntoDb,
   deleteAdminFromDb,
+  softDeleteAdminFromDb,
 };
