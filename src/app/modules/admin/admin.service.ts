@@ -31,6 +31,11 @@ const getAllAdminFromDb = async (params: any, options: any) => {
       })),
     });
   }
+
+  andConditions.push({
+    isDeleted: false,
+  });
+
   const whereConditions: Prisma.AdminWhereInput = { AND: andConditions };
 
   const result = await prisma.admin.findMany({
@@ -60,14 +65,23 @@ const getAllAdminFromDb = async (params: any, options: any) => {
 };
 
 const getSingleAdminFromDb = async (id: string) => {
-  const result = await prisma.admin.findUnique({
+  const result = await prisma.admin.findUniqueOrThrow({
     where: {
       id,
+      isDeleted: false,
     },
   });
   return result;
 };
+
 const updateSingleAdminIntoDb = async (id: string, payload: Partial<Admin>) => {
+  await prisma.admin.findUniqueOrThrow({
+    where: {
+      id,
+      isDeleted: false,
+    },
+  });
+
   const result = await prisma.admin.update({
     where: {
       id,

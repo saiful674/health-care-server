@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import pick from "../../../shared/pick";
+import sendResponse from "../../../utils/sendResponse";
 import { adminServices } from "./admin.service";
 
 const getAllAdmin = async (req: Request, res: Response) => {
@@ -14,7 +15,8 @@ const getAllAdmin = async (req: Request, res: Response) => {
     const options = pick(req.query, ["limit", "page", "sortBy", "sortOrder"]);
 
     const result = await adminServices.getAllAdminFromDb(filter, options);
-    res.status(200).json({
+    sendResponse(res, {
+      statusCode: 200,
       success: true,
       message: "Admins are retrived successfully",
       meta: result.meta,
@@ -34,7 +36,8 @@ const getSingleAdmin = async (req: Request, res: Response) => {
     const { id } = req.params;
 
     const result = await adminServices.getSingleAdminFromDb(id);
-    res.status(200).json({
+    sendResponse(res, {
+      statusCode: 200,
       success: true,
       message: "Admin is retrived successfully",
       data: result,
@@ -52,7 +55,8 @@ const updateSingleAdmin = async (req: Request, res: Response) => {
     const { id } = req.params;
 
     const result = await adminServices.updateSingleAdminIntoDb(id, req.body);
-    res.status(200).json({
+    sendResponse(res, {
+      statusCode: 200,
       success: true,
       message: "Admin is updated successfully",
       data: result,
@@ -71,7 +75,8 @@ const deleteSingleAdmin = async (req: Request, res: Response) => {
     const { id } = req.params;
 
     const result = await adminServices.deleteAdminFromDb(id);
-    res.status(200).json({
+    sendResponse(res, {
+      statusCode: 200,
       success: true,
       message: "Admin is deleted successfully",
       data: result,
@@ -91,7 +96,8 @@ const softDeleteSingleAdmin = async (req: Request, res: Response) => {
 
     const result = await adminServices.softDeleteAdminFromDb(id);
 
-    res.status(200).json({
+    sendResponse(res, {
+      statusCode: 200,
       success: true,
       message: "Admin is deleted successfully",
       data: result,

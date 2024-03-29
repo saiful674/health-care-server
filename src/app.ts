@@ -3,6 +3,7 @@ import express, { Request, Response, urlencoded } from "express";
 import router from "./app/routes";
 
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 app.use(urlencoded({ extended: true }));
