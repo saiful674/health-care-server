@@ -1,8 +1,8 @@
 type TCalculatePaginationOptions = {
-  page: string;
-  limit: string;
-  sortBy: string;
-  sortOrder: string;
+  page?: number;
+  limit?: number;
+  sortBy?: string | undefined;
+  sortOrder?: string | undefined;
 };
 const calculatePagination = (options: TCalculatePaginationOptions) => {
   const page = Number(options.page) || 1;
