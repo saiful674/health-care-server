@@ -1,5 +1,7 @@
 import { UserStatus } from "@prisma/client";
 import bcrypt from "bcrypt";
+import { Secret } from "jsonwebtoken";
+import config from "../../../config";
 import prisma from "../../../utils/prisma";
 import { jwtHalper } from "../../halpers/jwtHalper";
 
@@ -25,8 +27,8 @@ const userLogin = async (payload: { email: string; password: string }) => {
       email: isUserExist.email,
       role: isUserExist.role,
     },
-    "asdfhjsaeuf",
-    "15m"
+    config.jwt.jwt_secret as Secret,
+    config.jwt.expires_in as string
   );
 
   const refreshToken = jwtHalper.genarateToken(
@@ -34,8 +36,8 @@ const userLogin = async (payload: { email: string; password: string }) => {
       email: isUserExist.email,
       role: isUserExist.role,
     },
-    "asdfhjsaeufdasf",
-    "15d"
+    config.jwt.refresh_token_secret as Secret,
+    config.jwt.refresh_token_expires_in as string
   );
 
   return {
@@ -48,7 +50,10 @@ const userLogin = async (payload: { email: string; password: string }) => {
 const refreshToken = async (token: string) => {
   let decodedUser;
   try {
-    decodedUser = jwtHalper.varifyToken(token, "asdfhjsaeufdasf");
+    decodedUser = jwtHalper.varifyToken(
+      token,
+      config.jwt.refresh_token_secret as Secret
+    );
   } catch (error) {
     throw new Error("You are not authorised!");
   }
@@ -65,8 +70,8 @@ const refreshToken = async (token: string) => {
       email: isUserExist.email,
       role: isUserExist.role,
     },
-    "asdfhjsaeuf",
-    "15m"
+    config.jwt.jwt_secret as Secret,
+    config.jwt.expires_in as string
   );
 
   return { accessToken };
