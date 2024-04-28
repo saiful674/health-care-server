@@ -8,7 +8,11 @@ import AppError from "../errors/AppError";
 import { jwtHalper } from "../halpers/jwtHalper";
 
 const auth = (...roles: string[]) => {
-  return async (req: Request, res: Response, next: NextFunction) => {
+  return async (
+    req: Request & { user?: any },
+    res: Response,
+    next: NextFunction
+  ) => {
     const token = req.headers.authorization;
     try {
       if (!token) {
@@ -22,6 +26,8 @@ const auth = (...roles: string[]) => {
       if (roles.length && !roles.includes(decodedUser.role)) {
         throw new AppError(httpStatus.FORBIDDEN, "Access Forbidden!");
       }
+
+      req.user = decodedUser;
 
       const isUserExist = await prisma.user.findUniqueOrThrow({
         where: {

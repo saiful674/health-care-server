@@ -1,8 +1,10 @@
 import { UserStatus } from "@prisma/client";
 import bcrypt from "bcrypt";
+import httpStatus from "http-status";
 import { Secret } from "jsonwebtoken";
 import config from "../../../config";
 import prisma from "../../../utils/prisma";
+import AppError from "../../errors/AppError";
 import { jwtHalper } from "../../halpers/jwtHalper";
 
 const userLogin = async (payload: { email: string; password: string }) => {
@@ -17,7 +19,7 @@ const userLogin = async (payload: { email: string; password: string }) => {
     payload.password,
     isUserExist.password
   );
-  console.log(isUserExist);
+
   if (!isPasswordMatched) {
     throw new Error("Password Incorrect!");
   }
@@ -77,7 +79,39 @@ const refreshToken = async (token: string) => {
   return { accessToken };
 };
 
+const changePasswordIntoDb = async (payload: any, user: any) => {
+  const isUserExist = await prisma.user.findUniqueOrThrow({
+    where: {
+      email: user.email,
+      status: UserStatus.active,
+    },
+  });
+
+  const isPasswordMatched = await bcrypt.compare(
+    payload.oldPassword,
+    isUserExist.password
+  );
+
+  if (!isPasswordMatched) {
+    throw new AppError(httpStatus.FORBIDDEN, "Password not matched!");
+  }
+  const hashedPassword = await bcrypt.hash(payload.newPassword, 12);
+
+  await prisma.user.update({
+    where: {
+      email: isUserExist.email,
+    },
+    data: {
+      password: hashedPassword,
+    },
+  });
+  return {
+    message: "Password changed successfull",
+  };
+};
+
 export const authServices = {
   userLogin,
   refreshToken,
+  changePasswordIntoDb,
 };
