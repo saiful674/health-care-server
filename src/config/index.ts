@@ -19,4 +19,9 @@ export default {
     email: process.env.EMAIL,
     app_pass: process.env.APP_PASS,
   },
+  image_uploader: {
+    cloud_name: process.env.LOUD_NAME,
+    api_key: process.env.PI_KEY,
+    api_secret: process.env.PI_SECRET,
+  },
 };
