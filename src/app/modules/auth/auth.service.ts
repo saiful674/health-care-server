@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import httpStatus from "http-status";
 import { Secret } from "jsonwebtoken";
 import config from "../../../config";
+import emailSender from "../../../utils/emailSender";
 import prisma from "../../../utils/prisma";
 import AppError from "../../errors/AppError";
 import { jwtHalper } from "../../halpers/jwtHalper";
@@ -110,8 +111,67 @@ const changePasswordIntoDb = async (payload: any, user: any) => {
   };
 };
 
+const forgetPassword = async (payload: { email: string }) => {
+  const isUserExist = await prisma.user.findUniqueOrThrow({
+    where: {
+      email: payload.email,
+      status: UserStatus.active,
+    },
+  });
+
+  const resetPassToken = jwtHalper.genarateToken(
+    { email: isUserExist.email, role: isUserExist.role },
+    config.jwt.reset_pass_secret as Secret,
+    config.jwt.reset_pass_token_expires_in as string
+  );
+
+  const resetPassLink =
+    config.reset_pass_link +
+    `/reset-pass?userId=${isUserExist.id}&token=${resetPassToken}`;
+
+  const html = `
+    <div>
+      <p>Here is your reset password link</p>
+      <a href=${resetPassLink}><button>Reset Password</button></a>
+    </div>
+    `;
+  await emailSender(isUserExist.email, html);
+};
+
+const resetPassword = async (
+  payload: { id: string; password: string },
+  token: string
+) => {
+  const isUserExist = await prisma.user.findUniqueOrThrow({
+    where: {
+      id: payload.id,
+      status: UserStatus.active,
+    },
+  });
+
+  const isTokenValid = jwtHalper.varifyToken(
+    token,
+    config.jwt.reset_pass_secret as Secret
+  );
+
+  if (!isTokenValid) {
+    throw new AppError(httpStatus.FORBIDDEN, "Your are forbidden!");
+  }
+  const hashedPassword = await bcrypt.hash(payload.password, 12);
+  await prisma.user.update({
+    where: {
+      email: isTokenValid?.email,
+    },
+    data: {
+      password: hashedPassword,
+    },
+  });
+};
+
 export const authServices = {
   userLogin,
   refreshToken,
   changePasswordIntoDb,
+  forgetPassword,
+  resetPassword,
 };

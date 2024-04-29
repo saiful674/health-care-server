@@ -42,9 +42,32 @@ const changePassword = catchAsync(
     });
   }
 );
+const forgetPassword = catchAsync(async (req: Request, res: Response) => {
+  const result = await authServices.forgetPassword(req.body);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Password reset link send to email successfully",
+    data: result,
+  });
+});
+const resetPassword = catchAsync(async (req: Request, res: Response) => {
+  const token = req.headers.authorization || "";
+  const result = await authServices.resetPassword(req.body, token);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Password reset successfull",
+    data: result,
+  });
+});
 
 export const authController = {
   login,
   refreshToken,
   changePassword,
+  forgetPassword,
+  resetPassword,
 };
