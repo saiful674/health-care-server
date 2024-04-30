@@ -8,6 +8,18 @@ import { userValidations } from "./user.validations";
 
 const router = express.Router();
 
+router.get(
+  "/",
+  auth(UserRole.admin, UserRole.superAdmin),
+  userControllers.getAllUser
+);
+
+router.get(
+  "/me",
+  auth(UserRole.superAdmin, UserRole.admin, UserRole.doctor, UserRole.patient),
+  userControllers.getMyProfile
+);
+
 router.post(
   "/create-admin",
   auth(UserRole.admin, UserRole.superAdmin),
@@ -30,7 +42,6 @@ router.post(
 
 router.post(
   "/create-patient",
-  auth(UserRole.superAdmin, UserRole.admin),
   imageUploader.uploadToMulter.single("file"),
   (req: Request, res: Response, next: NextFunction) => {
     req.body = userValidations.createPatient.parse(JSON.parse(req.body.data));
@@ -43,6 +54,16 @@ router.patch(
   auth(UserRole.superAdmin, UserRole.admin),
   validateRequest(userValidations.updateStatus),
   userControllers.changeProfileStatus
+);
+
+router.patch(
+  "/update-my-profile",
+  auth(UserRole.superAdmin, UserRole.admin, UserRole.doctor, UserRole.patient),
+  imageUploader.uploadToMulter.single("file"),
+  (req: Request, res: Response, next: NextFunction) => {
+    req.body = JSON.parse(req.body.data);
+    return userControllers.updateMyProfie(req, res, next);
+  }
 );
 
 export const userRouter = router;
