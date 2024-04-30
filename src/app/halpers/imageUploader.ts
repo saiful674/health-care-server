@@ -11,19 +11,22 @@ const storage = multer.diskStorage({
 });
 
 import { v2 as cloudinary } from "cloudinary";
-import config from "../../config";
 import { TCloudinaryResponse, TFile } from "../interface/file";
 
+// cloudinary.config({
+//   cloud_name: config.image_uploader.cloud_name,
+//   api_key: config.image_uploader.api_key,
+//   api_secret: config.image_uploader.api_secret,
+// });
 cloudinary.config({
-  cloud_name: config.image_uploader.cloud_name,
-  api_key: config.image_uploader.api_key,
-  api_secret: config.image_uploader.api_secret,
+  cloud_name: "dkxya25xc",
+  api_key: "865857878247459",
+  api_secret: "1HHAUEf_Uxowoh3e5hDXflFl4L4",
 });
 
 const uploadToCloudinary = async (
   file: TFile
 ): Promise<TCloudinaryResponse> => {
-  console.log(file);
   return await new Promise((resolve, reject) => {
     cloudinary.uploader.upload(
       file.path,
