@@ -104,7 +104,6 @@ const getByIdFromDB = async (id: string): Promise<Doctor | null> => {
   });
   return result;
 };
-
 const updateIntoDB = async (id: string, payload: TDoctorUpdate) => {
   const { specialties, ...doctorData } = payload;
 
@@ -141,8 +140,9 @@ const updateIntoDB = async (id: string, payload: TDoctorUpdate) => {
       const createSpecialtiesIds = specialties.filter(
         (specialty) => !specialty.isDeleted
       );
-      console.log(createSpecialtiesIds);
+
       for (const specialty of createSpecialtiesIds) {
+        console.log(specialty.specialtiesId);
         await transactionClient.doctorSpecialties.create({
           data: {
             doctorId: doctorInfo.id,

@@ -22,7 +22,7 @@ router.get(
 
 router.post(
   "/create-admin",
-  auth(UserRole.admin, UserRole.superAdmin),
+  // auth(UserRole.admin, UserRole.superAdmin),
   imageUploader.uploadToMulter.single("file"),
   (req: Request, res: Response, next: NextFunction) => {
     req.body = userValidations.createAdmin.parse(JSON.parse(req.body.data));

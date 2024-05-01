@@ -34,4 +34,4 @@ router.delete(
   doctorController.softDelete
 );
 
-export const DoctorRoutes = router;
+export const doctorRoutes = router;
