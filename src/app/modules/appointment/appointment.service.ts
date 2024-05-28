@@ -4,8 +4,9 @@ import {
   Prisma,
   UserRole,
 } from "@prisma/client";
-import httpStatus from "http-status";
 import { v4 as uuidv4 } from "uuid";
+
+import httpStatus from "http-status";
 import calculatePagination from "../../../utils/calculatePagination";
 import prisma from "../../../utils/prisma";
 import AppError from "../../errors/AppError";
