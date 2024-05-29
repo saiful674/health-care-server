@@ -31,6 +31,10 @@ export default {
     cancelUrl: process.env.CANCEL_URL,
     failUrl: process.env.FAIL_URL,
     sslPaymentApi: process.env.SSL_PAYMENT_API,
-    sslValidationApi: process.env.SSL_VALIDATIOIN_API
-}
+    sslValidationApi: process.env.SSL_VALIDATIOIN_API,
+  },
+  super_admin: {
+    email: process.env.SUPER_ADMIN_EMAIL,
+    pass: process.env.SUPER_ADMIN_PASS,
+  },
 };
